@@ -15,3 +15,5 @@ media/
 staticfiles/
 
 *.log
+
+weather/static/weather/input.css
