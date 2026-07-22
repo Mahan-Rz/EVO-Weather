@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Weather App</h1>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <input type="text" name="city" placeholder="Enter city" />
+
+      <button type="submit">Search</button>
+    </form>
+
+    <hr />
+
+    <h2>History</h2>
+
+    {% for s in searches %}
+
+    <p>
+      {{ s.city }} | {{ s.temperature }}°C | {{ s.description }} | {{
+      s.searched_at }}
+    </p>
+
+    {% empty %}
+
+    <p>No searches yet</p>
+
+    {% endfor %}
+  </body>
+</html>
