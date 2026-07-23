@@ -106,10 +106,9 @@ function setForecastLayout() {
   if (!forecastWrapper) return;
 
   forecastWrapper.style.display = "grid";
-  forecastWrapper.style.gridTemplateColumns = "repeat(auto-fit, minmax(14rem, 1fr))";
-  forecastWrapper.style.gridAutoRows = "1fr";
+  forecastWrapper.style.gridTemplateColumns = window.innerWidth < 640 ? "1fr" : "repeat(2, minmax(0, 1fr))";
   forecastWrapper.style.gap = "0.75rem";
-  forecastWrapper.style.alignItems = "stretch";
+  forecastWrapper.style.alignItems = "start";
   forecastWrapper.style.width = "100%";
   forecastWrapper.style.maxWidth = "100%";
 }
@@ -142,7 +141,7 @@ function renderForecast(items) {
     card.style.borderRadius = "1rem";
     card.style.background = "linear-gradient(135deg, rgba(255,255,255,0.14), rgba(15, 23, 42, 0.34))";
     card.style.padding = "1rem";
-    card.style.minHeight = "11rem";
+    card.style.minHeight = window.innerWidth < 640 ? "10.5rem" : "7.5rem";
     card.style.display = "flex";
     card.style.flexDirection = "column";
     card.style.justifyContent = "space-between";
