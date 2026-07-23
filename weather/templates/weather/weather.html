@@ -8,18 +8,27 @@
     <link rel="stylesheet" href="{% static 'weather/output.css' %}?v=3" />
     <link rel="icon" type="image/x-icon" href="{% static '\weather\images\weather-app-icon.png' %}">
     <title>Weather</title>
+    <style>
+      html, body { min-height: 100%; }
+      body {
+        min-height: 100dvh;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+    </style>
   </head>
 
-  <body class="min-h-screen bg-gradient-to-br from-slate-950 via-sky-950 to-indigo-950 font-sans text-slate-100">
-    <div class="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-6 sm:px-6 lg:px-8">
-      <header class="text-center">
-        <p class="mb-3 text-sm font-medium uppercase tracking-[0.35em] text-sky-200/80">
+  <body class="min-h-[100dvh] bg-gradient-to-br from-slate-950 via-sky-950 to-indigo-950 bg-cover font-sans text-slate-100">
+    <div class="mx-auto flex min-h-[100dvh] max-w-6xl flex-col px-4 py-6 sm:px-6 lg:px-8">
+      <header class="rounded-[2rem] border border-white/10 bg-slate-950/45 px-4 py-5 text-center shadow-[0_20px_60px_-25px_rgba(2,6,23,0.75)] backdrop-blur-xl sm:px-6 sm:py-6">
+        <p class="mb-3 text-sm font-medium uppercase tracking-[0.35em] text-sky-200/90">
           Daily forecast
         </p>
         <h1 class="text-4xl font-semibold text-white sm:text-5xl">
           Weather Station
         </h1>
-        <p class="mx-auto mt-3 max-w-xl text-sm text-slate-300 sm:text-base">
+        <p class="mx-auto mt-3 max-w-xl text-sm text-slate-200/90 sm:text-base">
           A calm, simple view of your city’s weather and the next seven days.
         </p>
 
@@ -28,7 +37,7 @@
             type="text"
             id="city"
             placeholder="Enter a city"
-            class="w-full rounded-full border border-white/20 bg-white/10 py-3 pl-5 pr-24 text-sm text-white outline-none backdrop-blur-xl transition-all duration-300 placeholder:text-gray-700 focus:border-sky-300 focus:ring-2 focus:ring-sky-300/40"
+            class="w-full rounded-full border border-white/20 bg-slate-950/70 py-3 pl-5 pr-24 text-sm text-white outline-none backdrop-blur-xl transition-all duration-300 placeholder:text-slate-400/90 focus:border-sky-300 focus:ring-2 focus:ring-sky-300/40"
             onkeydown="if (event.key === 'Enter') getWeather();"
             autocomplete="off"
           />
@@ -38,7 +47,7 @@
           <button
             type="button"
             onclick="getWeather()"
-            class="absolute inset-y-0 right-0 grid h-full min-w-[4.5rem] place-items-center rounded-r-full bg-white/10 border border-white/15 px-4 text-white transition-all duration-200 hover:bg-white/15 hover:text-sky-100"
+            class="absolute inset-y-0 right-0 grid h-full min-w-[4.5rem] place-items-center rounded-r-full border border-white/15 bg-slate-950/70 px-4 text-white transition-all duration-200 hover:bg-slate-900/80 hover:text-sky-100"
             aria-label="Search city"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="h-5 w-5">
@@ -118,7 +127,7 @@
                 <p class="text-sm text-slate-400">High • Low</p>
               </div>
             </div>
-            <div id="forecast" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4 auto-rows-min"></div>
+            <div id="forecast" class="grid w-full min-w-0 grid-cols-1 gap-2 auto-rows-fr sm:grid-cols-2"></div>
           </div>
 
           <div class="rounded-[1.4rem] border border-white/15 bg-slate-900/30 p-4 shadow-lg shadow-slate-950/20 backdrop-blur-xl">

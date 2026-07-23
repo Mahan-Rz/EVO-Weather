@@ -102,36 +102,88 @@ function buildHourlyForecastItems(data) {
   }));
 }
 
-function renderForecast(items) {
-  forecastWrapper.innerHTML = "";
+function setForecastLayout() {
+  if (!forecastWrapper) return;
 
   forecastWrapper.style.display = "grid";
-  forecastWrapper.style.gridTemplateColumns = "repeat(auto-fit, minmax(10rem, 1fr))";
-  forecastWrapper.style.justifyContent = "center";
-  forecastWrapper.style.gap = "0.35rem";
+  forecastWrapper.style.gridTemplateColumns = "repeat(auto-fit, minmax(14rem, 1fr))";
+  forecastWrapper.style.gridAutoRows = "1fr";
+  forecastWrapper.style.gap = "0.75rem";
+  forecastWrapper.style.alignItems = "stretch";
+  forecastWrapper.style.width = "100%";
+  forecastWrapper.style.maxWidth = "100%";
+}
 
-  if (!items || items.length === 0) {
+function renderForecast(items) {
+  forecastWrapper.innerHTML = "";
+  setForecastLayout();
+
+  const forecastItems = Array.isArray(items) ? items.slice(0, 7) : [];
+  const cardsToRender = forecastItems.length < 7
+    ? [...forecastItems, ...Array.from({ length: 7 - forecastItems.length }, () => ({ placeholder: true }))]
+    : forecastItems;
+
+  if (cardsToRender.length === 0) {
     forecastWrapper.innerHTML = '<div style="grid-column:1 / -1; min-width:0; border:1px solid rgba(255,255,255,0.1); border-radius:1rem; background:rgba(255,255,255,0.05); padding:1rem; color:#cbd5e1;">No forecast available yet.</div>';
     return;
   }
 
-  items.forEach((item) => {
-    const details = getWeatherDetails(item.weathercode);
+  cardsToRender.forEach((item) => {
+    const isPlaceholder = Boolean(item.placeholder);
+    const details = getWeatherDetails(isPlaceholder ? null : item.weathercode);
+    const precipitation = item.precipitation_probability ?? item.precipitation_probability_mean ?? null;
+    const precipText = precipitation != null ? `${Math.round(precipitation)}% precip` : "Mostly calm";
     const card = document.createElement("div");
     card.style.minWidth = "0";
-    card.style.maxWidth = "11rem";
+    card.style.maxWidth = "100%";
     card.style.width = "100%";
-    card.style.border = "1px solid rgba(255,255,255,0.1)";
-    card.style.borderRadius = "0.8rem";
-    card.style.background = "rgba(255,255,255,0.05)";
-    card.style.padding = "0.75rem";
+    card.style.margin = "0";
+    card.style.border = "1px solid rgba(255,255,255,0.12)";
+    card.style.borderRadius = "1rem";
+    card.style.background = "linear-gradient(135deg, rgba(255,255,255,0.14), rgba(15, 23, 42, 0.34))";
+    card.style.padding = "1rem";
+    card.style.minHeight = "11rem";
+    card.style.display = "flex";
+    card.style.flexDirection = "column";
+    card.style.justifyContent = "space-between";
+    card.style.boxSizing = "border-box";
+    card.style.boxShadow = "0 10px 30px -18px rgba(2, 6, 23, 0.75)";
 
-    card.innerHTML = `
-      <p class="text-xs font-semibold uppercase tracking-[0.25em] text-white">${formatDate(item.date)}</p>
-      <div class="mt-1 text-2xl">${details.icon}</div>
-      <p class="mt-1 text-xs text-slate-300">${details.label}</p>
-      <p class="mt-1 text-xs text-slate-100">${Math.round(item.temperature_max)}° / ${Math.round(item.temperature_min)}°</p>
-    `;
+    card.innerHTML = isPlaceholder
+      ? `
+        <div class="flex items-start justify-between gap-2">
+          <p class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-300">Upcoming</p>
+          <span class="rounded-full border border-white/10 bg-white/10 px-2 py-0.5 text-[10px] text-slate-200">--</span>
+        </div>
+        <div class="mt-2 flex items-center gap-2">
+          <div class="text-2xl">--</div>
+          <div>
+            <p class="text-[11px] font-medium text-slate-100">Waiting</p>
+            <p class="text-[10px] text-slate-400">No data yet</p>
+          </div>
+        </div>
+        <div class="mt-2 flex items-center justify-between text-[11px] text-slate-200">
+          <span>High --°</span>
+          <span>Low --°</span>
+        </div>
+      `
+      : `
+        <div class="flex items-start justify-between gap-2">
+          <p class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-200">${formatDate(item.date)}</p>
+          <span class="rounded-full border border-white/10 bg-white/10 px-2 py-0.5 text-[10px] text-slate-200">${details.icon}</span>
+        </div>
+        <div class="mt-2 flex items-center gap-2">
+          <div class="text-2xl">${details.icon}</div>
+          <div class="min-w-0">
+            <p class="text-[11px] font-medium text-slate-100">${details.label}</p>
+            <p class="text-[10px] text-slate-400">${precipText}</p>
+          </div>
+        </div>
+        <div class="mt-2 flex items-center justify-between text-[11px] text-slate-200">
+          <span>High ${Math.round(item.temperature_max)}°</span>
+          <span>Low ${Math.round(item.temperature_min)}°</span>
+        </div>
+      `;
 
     forecastWrapper.appendChild(card);
   });
@@ -183,6 +235,8 @@ function scrollHourlyForecast(direction) {
     behavior: "smooth"
   });
 }
+
+window.addEventListener("resize", setForecastLayout);
 
 input.addEventListener("focus", function () {
   if (history.length > 0) {
