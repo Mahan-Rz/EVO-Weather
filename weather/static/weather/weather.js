@@ -117,9 +117,9 @@ function renderForecast(items) {
   forecastWrapper.innerHTML = "";
   setForecastLayout();
 
-  const forecastItems = Array.isArray(items) ? items.slice(0, 7) : [];
-  const cardsToRender = forecastItems.length < 7
-    ? [...forecastItems, ...Array.from({ length: 7 - forecastItems.length }, () => ({ placeholder: true }))]
+  const forecastItems = Array.isArray(items) ? items.slice(0, 8) : [];
+  const cardsToRender = forecastItems.length < 8
+    ? [...forecastItems, ...Array.from({ length: 8 - forecastItems.length }, () => ({ placeholder: true }))]
     : forecastItems;
 
   if (cardsToRender.length === 0) {
@@ -225,6 +225,102 @@ function renderHourlyForecast(items) {
   });
 }
 
+function renderCloudBar(percent) {
+  const container = document.getElementById("cloudBar");
+
+  if (percent == null) {
+    container.innerHTML = "";
+    return;
+  }
+
+  const clamped = Math.max(0, Math.min(100, percent));
+
+  container.innerHTML = `
+    <div style="height: 8px; border-radius: 999px; background: rgba(255,255,255,0.1); overflow: hidden;">
+      <div style="height: 100%; width: ${clamped}%; border-radius: 999px; background: linear-gradient(90deg, #38bdf8, #cbd5e1);"></div>
+    </div>
+  `;
+}
+
+function uvLabelForValue(uv) {
+  if (uv == null) return "--";
+  if (uv < 3) return "Low";
+  if (uv < 6) return "Moderate";
+  if (uv < 8) return "High";
+  if (uv < 11) return "Very high";
+  return "Extreme";
+}
+
+function degreesToCompass(deg) {
+  const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+  const index = Math.round(deg / 45) % 8;
+  return directions[index];
+}
+
+function renderWindCompass(deg) {
+  const container = document.getElementById("windCompass");
+  const label = document.getElementById("windDirLabel");
+
+  if (deg == null) {
+    container.innerHTML = "";
+    label.textContent = "--";
+    return;
+  }
+
+  container.innerHTML = `
+    <svg width="70" height="70" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+      <text x="60" y="16" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.5)">N</text>
+      <text x="108" y="64" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.5)">E</text>
+      <text x="60" y="112" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.5)">S</text>
+      <text x="12" y="64" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.5)">W</text>
+      <g transform="rotate(${deg} 60 60)">
+        <line x1="60" y1="60" x2="60" y2="24" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+        <polygon points="60,16 54,30 66,30" fill="#38bdf8"/>
+        <line x1="60" y1="60" x2="60" y2="82" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <circle cx="60" cy="60" r="4" fill="white"/>
+    </svg>
+  `;
+
+  label.textContent = `${degreesToCompass(deg)} · ${Math.round(deg)}°`;
+}
+
+function renderUvGauge(uv) {
+  const container = document.getElementById("uvGauge");
+  const label = document.getElementById("uvLabel");
+
+  if (uv == null) {
+    container.innerHTML = "";
+    label.textContent = "--";
+    return;
+  }
+
+  const maxUv = 11;
+  const clamped = Math.min(uv, maxUv);
+  const arcLength = 144.5;
+  const offset = arcLength - (clamped / maxUv) * arcLength;
+
+  container.innerHTML = `
+    <svg width="70" height="53" viewBox="0 0 120 90">
+      <path d="M14 74 A46 46 0 0 1 106 74" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="10" stroke-linecap="round"/>
+      <path d="M14 74 A46 46 0 0 1 106 74" fill="none" stroke="url(#uvgrad)" stroke-width="10" stroke-linecap="round"
+            stroke-dasharray="${arcLength}" stroke-dashoffset="${offset}"/>
+      <defs>
+        <linearGradient id="uvgrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#4ade80"/>
+          <stop offset="35%" stop-color="#facc15"/>
+          <stop offset="65%" stop-color="#fb923c"/>
+          <stop offset="100%" stop-color="#f43f5e"/>
+        </linearGradient>
+      </defs>
+      <text x="60" y="58" text-anchor="middle" font-size="20" font-weight="600" fill="white">${uv.toFixed(1)}</text>
+    </svg>
+  `;
+
+  label.textContent = uvLabelForValue(uv);
+}
+
 function scrollHourlyForecast(direction) {
   const panel = document.getElementById("hourlyForecast");
   if (!panel) return;
@@ -307,8 +403,10 @@ async function getWeather() {
     document.getElementById("precipitation").textContent = `${current.precipitation_probability ?? "N/A"}%`;
     document.getElementById("pressure").textContent = `${current.pressure ?? "N/A"} hPa`;
     document.getElementById("visibility").textContent = current.visibility != null ? `${(current.visibility / 1000).toFixed(1)} km` : "N/A";
-    document.getElementById("uvIndex").textContent = current.uv_index != null ? `${current.uv_index}` : "N/A";
     document.getElementById("cloudcover").textContent = `${current.cloudcover ?? "N/A"}%`;
+    renderCloudBar(current.cloudcover);
+    renderWindCompass(current.wind_direction);
+    renderUvGauge(current.uv_index);
 
     weatherIcon.textContent = details.icon;
     conditionText.textContent = details.label;

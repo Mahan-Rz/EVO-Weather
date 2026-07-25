@@ -44,10 +44,7 @@ def weather_view(request):
             try:
                 current_dt = datetime.fromisoformat(current_time)
                 hourly_times = [datetime.fromisoformat(t) for t in hourly["time"]]
-                current_index = min(
-                    range(len(hourly_times)),
-                    key=lambda i: abs((hourly_times[i] - current_dt).total_seconds())
-                )
+                current_index = min(range(len(hourly_times)), key=lambda i: abs((hourly_times[i] - current_dt).total_seconds()))
             except Exception:
                 current_index = None
 
@@ -104,6 +101,7 @@ def weather_view(request):
         "windgust": hourly_value("windgusts_10m"),
         "visibility": hourly_value("visibility"),
         "uv_index": hourly_value("uv_index"),
+        "wind_direction": hourly_value("winddirection_10m"),
         "temperature_max": daily_max[0] if daily_max else None,
         "temperature_min": daily_min[0] if daily_min else None,
         "sunrise": daily.get("sunrise", [None])[0],
