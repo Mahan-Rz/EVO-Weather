@@ -7,11 +7,11 @@ from django.shortcuts import render
 from .serializers import WeatherSearchSerializer
 from .models import WeatherSearch
 from .services import get_coordinates, get_weather
+from .utils import (get_cached_weather, set_cached_weather)
 
 
 def weather_page(request):
     return render(request, "weather/weather.html")
-
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -20,6 +20,11 @@ def weather_view(request):
 
     if not city:
         return Response({"error": "City is required"}, status=400)
+
+    cached_weather = get_cached_weather(city)
+
+    if cached_weather:
+        return Response(cached_weather)
 
     geo_response = get_coordinates(city)
 
@@ -125,6 +130,8 @@ def weather_view(request):
         "forecast": forecast,
         "hourly_forecast": hourly_forecast
     }
+
+    set_cached_weather(city, response_data)
 
     if request.user.is_authenticated:
         history = WeatherSearch.objects.filter(user=request.user).order_by('-created_at')[:5]
