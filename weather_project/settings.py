@@ -145,6 +145,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-REDIS_HOST = config("REDIS_HOST")
-REDIS_PORT = config("REDIS_PORT", cast=int)
-REDIS_DB = config("REDIS_DB", cast=int)
+REDIS_HOST = config("REDIS_HOST", default="localhost")
+REDIS_PORT = config("REDIS_PORT", default=6379, cast=int)
+REDIS_DB = config("REDIS_DB", default=0, cast=int)
