@@ -357,6 +357,11 @@ document.addEventListener("click", function (e) {
   }
 });
 
+// Render empty forecast placeholders before any search is performed.
+setForecastLayout();
+renderForecast([]);
+renderHourlyForecast([]);
+
 async function getWeather() {
   const city = document.getElementById("city").value.trim();
 
