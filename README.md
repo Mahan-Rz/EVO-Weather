@@ -4,7 +4,7 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-336791)
 ![Redis](https://img.shields.io/badge/Redis-8-DC382D)
 
-# Django Weather Application
+# EVO Weather
 
 A weather forecasting application built with Django and Open-Meteo API.
 
@@ -85,13 +85,13 @@ The project provides real-time weather information by consuming external APIs an
 Clone repository
 
 ```bash
-git clone https://github.com/Mahan-Rz/django-weather-app.git
+git clone https://github.com/Mahan-Rz/EVO-Weather.git
 ```
 
 Go to project
 
 ```bash
-cd django-weather-app
+cd EVO-Weather
 ```
 
 Create virtual environment
