@@ -46,8 +46,8 @@ The project provides real-time weather information by consuming external APIs an
 
 ### Home
 
-![Home](screenshots/Home1.png)
-![Weather](screenshots/Home2.png)
+![Home](screenshots/Home.png)
+![Weather](screenshots/Home1.png)
 
 ---
 
