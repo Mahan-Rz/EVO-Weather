@@ -22,6 +22,10 @@ jobs:
 
       - name: Django checks
         run: python manage.py check
+        env:
+          SECRET_KEY: "test-secret-key-for-ci"
 
       - name: Run tests
         run: python manage.py test
+        env:
+          SECRET_KEY: "test-secret-key-for-ci"
